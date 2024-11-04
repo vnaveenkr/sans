@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<title>देवनागरी to/from ಕನ್ನಡ</title>
+</head>
+<html>
+<script>
+function dv2kn() {
+	var ret = document.getElementById("dv").value.split('').map((e) => {
+		var p = e.charCodeAt(0);
+		return String.fromCharCode((p >= 0x0900 && p <= 0x97f) ? (p + 0x380) : p);
+	}).join('');
+	document.getElementById("kn").value = ret;
+}
+
+function kn2dv() {
+	var ret = document.getElementById("kn").value.split('').map((e) => {
+		var p = e.charCodeAt(0);
+		return String.fromCharCode((p >= 0x0c80 && p <= 0xcff) ? (p - 0x380) : p);
+	}).join('');
+	document.getElementById("dv").value = ret;
+}
+
+</script>
+<body>
+<em>ಕನ್ನಡ:<br></em>
+<textarea id="kn" rows="20" cols="80" oninput="kn2dv()">
+</textarea>
+<em><br>देवनागरी:<br></em>
+<textarea id="dv" rows="20" cols="80" oninput="dv2kn()">
+</textarea>
+</body>
+</html>

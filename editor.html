@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<title>Test 1</title>
+
+<style>
+#test1 {
+	width: 600px;
+	height: 400px;
+	white-space: pre-wrap;
+	border: 1px solid blue;
+}
+@font-face {
+  font-family: 'Noto Sans Kannada';
+  src: url('https://cdn.jsdelivr.net/gh/googlei18n/noto-fonts/unhinted/otf/NotoSansKannada/NotoSansKannada-Regular.otf');
+}
+
+* {
+	font-family: "Noto Sans", sans-serif;
+	font-size: 14px;
+}
+
+:lang(kn), :lang(dv) {
+	font-family: "Noto Sans Kannada",
+	"Noto Sans Devanagari", "Noto Sans", sans-serif;
+	font-size: 1em;
+	font-weight: 500;
+	line-height:1.5em;
+}
+</style>
+</head>
+
+<div style="width:100%">
+	<label for="inp_lang" autocomplete="off" contenteditable="true">Language:</label>
+	<select id="inp_lang" onchange="state.lang = this.value;console.log(this.value);">
+		<option value="en" selected default>English</option>
+		<option value="kn">ಕನ್ನಡ</option>
+		<option value="sa">दॆवानागरि</option>
+	</select>
+</div>
+
+<textarea id="test1" lang="kn" autocomplte="off"></textarea>
+
+<script>
+
+let state = {
+	"lang": "",
+	"esc": false,
+	"repeatCount": ""
+};
+
+const keyMap = {
+	"kn": {
+		"KeyA": [ "ಾ", "ಆ", "ಅ", ""],
+		"KeyB": [ "ಬ", "ಭ", "", ""],
+		"KeyC": [ "ಚ", "ಛ", "", ""],
+		"KeyD": [ "ದ", "ಧ", "", ""],
+		"KeyE": [ "ೆ", "ೇ", "ಎ","ಏ"],
+		"KeyF": [ "್", "ೄ", "ೠ", "​"],
+		"KeyG": [ "ಗ", "ಘ", "", "ꣳ"],
+		"KeyH": [ "ಹ", "ಃ", "ೱ", ""],
+		"KeyI": [ "ಿ", "ೀ", "ಇ", ""],
+		"KeyJ": [ "ಜ", "ಝ", "", ""],
+		"KeyK": [ "ಕ", "ಖ", "", ""],
+		"KeyL": [ "ಲ", "ಳ", "ೢ", ""],
+		"KeyM": [ "ಮ", "ಂ", "ಽ", ""],
+		"KeyN": [ "ನ", "ಣ", "", ""],
+		"KeyO": [ "ೊ", "ೋ", "ಒ", ""],
+		"KeyP": [ "ಪ", "ಫ", "", ""],
+		"KeyQ": [ "ಟ", "ಠ", "", ""],
+		"KeyR": [ "ರ", "ೃ", "ಋ", ""],
+		"KeyS": [ "ಸ", "ಶ", "", ""],
+		"KeyT": [ "ತ", "ಥ", "", ""],
+		"KeyU": [ "ು", "ೂ", "ಉ", ""],
+		"KeyV": [ "ವ", "ೌ", "ಔ", ""],
+		"KeyW": [ "ಡ", "ಢ", "", ""],
+		"KeyX": [ "ಷ", "಼", "ೞ", ""],
+		"KeyY": [ "ಯ", "ೈ", "ಐ", ""],
+		"KeyZ": [ "ಞ", "ಙ", "", ""],
+		"Minus": [ "-", "_", "॒", ""],
+		"Digit1": ["", "", "", ""],
+		"Digit2": ["", "", "", ""],
+		"Digit3": ["", "", "", ""],
+		"Digit4": ["", "", "", "₹"],
+		"Digit5": ["", "", "", ""],
+		"Digit6": ["", "", "", ""],
+		"Digit7": ["", "", "", ""],
+		"Digit8": ["", "", "", ""],
+		"Digit9": ["", "", "", ""],
+		"Digit0": ["", "", "", ""],
+		"Quote": [ "'", '"', "॑", "᳚"],
+		"Backslash": [ "\\", "|", "।", "॥"]
+	},
+	"sa": {
+		"KeyA": ["ा", "आ", "अ", "ॲ"],
+		"KeyB": ["ब", "भ", "", ""],
+		"KeyC": ["च", "छ", "", ""],
+		"KeyD": ["द", "ध", "", ""],
+		"KeyE": ["ॆ", "े", "ऎ", "े"],
+		"KeyF": ["्", "ॄ", "ॠ", ""],
+		"KeyG": ["ग", "घ", "", ""],
+		"KeyH": ["ह", "ः", "", ""],
+		"KeyI": ["ि", "ी", "इ", "ई"],
+		"KeyJ": ["ज", "झ", "", ""],
+		"KeyK": ["क", "ख", "", ""],
+		"KeyL": ["ल", "ळ", "", ""],
+		"KeyM": ["म", "ं", "", ""],
+		"KeyN": ["न", "ण", "", ""],
+		"KeyO": ["ॊ", "ो", "ऒ", "ओ"],
+		"KeyP": ["प", "फ", "फ़", ""],
+		"KeyQ": ["ट", "ठ", "", ""],
+		"KeyR": ["र", "ृ", "ऋ", "ऱ"],
+		"KeyS": ["स", "श", "", ""],
+		"KeyT": ["त", "थ", "", ""],
+		"KeyU": ["ु", "ू", "उ", "ऊ"],
+		"KeyV": ["व", "ौ", "", ""],
+		"KeyW": ["ड", "ढ", "ड", "ढ"],
+		"KeyX": ["ष", "़", "", ""],
+		"KeyY": ["य", "ै", "ऐ", "य़"],
+		"KeyZ": ["ञ", "ङ", "", ""],
+	},
+	"en": {
+	}
+};
+
+const caretToLineBeg = () => {
+	let div = document.querySelector('#test1');
+}
+
+const escMethods = {
+	"Digit0": caretToLineBeg
+}
+
+const specialKeys = {};
+
+function keyDown(e) {
+	let div = document.querySelector('#test1');
+	let start = div.selectionStart;
+	let end1 = div.selectionEnd;
+
+if(1) {
+	console.log(`start: ${div.selectionStart} end: ${div.selectionEnd}`);
+	console.log(`down: ${e.key}`);
+	console.log(`code: ${e.code}`);
+	let ctl = '';
+	if (e.ctrlKey) ctl += 'ctrl-';
+	if (e.getModifierState("Alt")) ctl += 'alt-';
+	if (e.isComposing) ctl += 'comp-';
+	if (e.shiftKey) ctl += 'shift-';
+	if (e.repeat) ctl += 'repeat-';
+	if (ctl) console.log(`ctl: ${ctl}`);
+}
+
+	if(e.code in specialKeys)
+		specialKeys[e.code]();
+
+	if (state.lang && 
+		e.code in keyMap[state.lang] &&
+		!e.getModifierState("Control")) {
+		e.preventDefault();
+		e.stopPropagation();
+		let idx = 0;
+		if (e.getModifierState("Shift")) idx += 1;
+		if (e.getModifierState("Alt")) idx += 2;
+		div.setRangeText(keyMap[state.lang][e.code][idx]);
+		div.setSelectionRange(start+1, end1+1);
+		// ++div.SelectionStart;
+		// ++div.SelectionEnd;
+	} else {
+		// div.setRangeText(e.key);
+		// div.setRangeText(e.key);
+		// div.setSelectionRange(start+1, end1+1);
+	}
+}
+
+function keyClick(e) {
+	let range; let textNode; let offset;
+	if (document.caretRangeFromPoint) {
+		range = document.caretRangeFromPoint(e.clientX, e.clientY);
+		textNode = range.startContainer;
+		offset = range.startOffset;
+	} else if (document.caretPositionFromPoint) {
+		range = document.caretPositionFromPoint(e.clientX, e.clientY);
+		textNode = range.offsetNode;
+		offset = range.offset;
+	}
+	console.log(`node: ${textNode.id}: offset: ${offset}`);
+}
+
+function keyDir() {
+	let div = document.querySelector('#test1');
+	let start = div.selectionStart;
+	if (typeof keyDir.last == 'undefined')
+		keyDir.last = 0;
+	console.log(`keydir: ${start} ${start - keyDir.last}`);
+	keyDir.last = start;
+}
+
+function keyUp(e) {
+	// console.log(`up: ${e.key}`);
+}
+
+function setCaretPos(idx) {
+	const tag = document.getElementById('#text1');
+	const setpos = document.createRange();
+	const set1 = window.getSelection();
+	setpos.setStart(tag.childNodes[0], idx);
+	setpos.collapse(true);
+	set1.removeAllRanges();
+	set1.addRange(setpos);
+	tag.focus();
+}
+
+let div = document.querySelector('#test1');
+div.value = "";
+div.addEventListener('keydown', keyDown);
+div.addEventListener('keyup', keyUp);
+div.addEventListener('click', keyClick, false);
+</script>
