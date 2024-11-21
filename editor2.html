@@ -1,32 +1,88 @@
 <!doctype html>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit:ital@0;1&display=swap");
-    #test1 {
+    body {
+      height: 100%;
+      width: 100%;
+    }
+    .editwin {
+      display: grid;
+      grid-template-rows: 25px minmax(100px, auto) 25px;
+      grid-template-columns: 60px auto;
+      width: 50%;
+      height:50%;
+      resize: both;
+      border: 3px solid #f90;
+      overflow: hidden;
+    }
+    .toppane {
+      grid-area: 1 / 1 / 2 / 3;
+      display: grid;
+      grid-template-columns: 25px 25px 25px auto 25px;
+      background-color: #f90;
+      height: 100%;
+    }
+    .bottompane {
+      grid-area: 3 / 1 / 4 / 3;
+    }
+    .bottompane input {
+      border: 1px solid #f90;
+      width: 100%;
+    }
+    .linenum {
+      grid-area: 2 / 1 / 3 / 2;
+      background-color: #eee;
+      border: none;
+    }
+    .editarea {
+      grid-area: 2 / 2 / 3 / 3;
       font-family: "Tiro Devanagari Sanskrit", serif;
       font-weight: 400;
       font-style: normal;
-      width: 600px;
-      height: 400px;
       white-space: pre-wrap;
-      border: 1px solid blue;
+      overflow:scroll;
+      border: 1px solid #f90;
+      border: none;
+      overflow: scroll;
+      scrollbar-color: #f00 #840 ;
+    }
+    .editarea:focus, .bottompane input {
+      outline: none;
+    }
+    .toppane button {
+      background-color: #900;
+      color: white;
+      border: 1px solid #900;
+      cursor: pointer;
+      height: 100%;
+    }
+    .btn-right {
+      margin-left: auto;
+    }
+    .win-title {
+      text-align: center;
+      color: #000;
+      height: 25px;
     }
   </style>
 
 <body>
-  <div style="width: 100%">
-    <label for="inp_lang" autocomplete="off" contenteditable="true">
-      Language:
-      </label>
-    <select
-      id="inp_lang"
-      onchange="state.lang = this.value;console.log(this.value);" >
-      <option value="en" selected default>English</option>
-      <option value="kn">ಕನ್ನಡ</option>
-      <option value="sa">दॆवानागरि</option>
-    </select>
+  <div class="editwin">
+    <div class="linenum"></div>
+    <div class="toppane">
+      <button class="button-sa">ॐ</button>
+      <button class="button-kn">ಅ</button>
+      <button class="button-en">A</button>
+      <div class="win-title">
+        भगवद्गीता
+      </div>
+      <button class="button-close btn-right">✕</button>
+    </div>
+    <div class="editarea" contenteditable="true" autocomplte="off"></div>
+    <div class="bottompane">
+      <input></input>
+    </div>
   </div>
-
-  <div id="test1" contenteditable="true" autocomplte="off" lang="sa"></div>
 </body>
 
   <script>
@@ -35,6 +91,15 @@
       esc: false,
       repeatCount: "",
     };
+    document.querySelector("#inp_lang").
+      addEventListener("change", (event) => {state.lang = event.target.value;console.log(event)});
+    document.querySelectorAll(".btn-group").addEventListener("command", (event) => {
+      if (event.command == "sa")
+        console.log("sa selected")
+    })
+    window.addEventListener("load", (event) => {
+      state.lang = document.querySelector("#inp_lang").value;
+    })
 
     const keyMap = {
       kn: {
@@ -109,34 +174,11 @@
       en: {},
     };
 
-    function insertHtmlAtSelectionEnd(html, isBefore) {
-      var sel, range, node;
-      if (window.getSelection) {
-        console.log("1st");
-        sel = window.getSelection();
-        if (sel.getRangeAt && sel.rangeCount) {
-          range = window.getSelection().getRangeAt(0);
-          range.collapse(isBefore);
-
-          // Range.createContextualFragment() would be useful here but was
-          // until recently non-standard and not supported in all browsers
-          // (IE9, for one)
-          var el = document.createElement("div");
-          el.innerHTML = html;
-          var frag = document.createDocumentFragment(),
-            node,
-            lastNode;
-          while ((node = el.firstChild)) {
-            lastNode = frag.appendChild(node);
-          }
-          range.insertNode(frag);
-        }
-      } else if (document.selection && document.selection.createRange) {
-        console.log("1st");
-        range = document.selection.createRange();
-        range.collapse(isBefore);
-        range.pasteHTML(html);
-      }
+    function insertTypedText(html) {
+      let range = window.getSelection().getRangeAt(0);
+      const frag = range.createContextualFragment(html);
+      range.insertNode(frag);
+      range.collapse(false);
     }
 
     const caretToLineBeg = () => {
@@ -154,19 +196,6 @@
       let start = div.selectionStart;
       let end1 = div.selectionEnd;
 
-      if (1) {
-        console.log(`start: ${div.selectionStart} end: ${div.selectionEnd}`);
-        console.log(`down: ${e.key}`);
-        console.log(`code: ${e.code}`);
-        let ctl = "";
-        if (e.ctrlKey) ctl += "ctrl-";
-        if (e.getModifierState("Alt")) ctl += "alt-";
-        if (e.isComposing) ctl += "comp-";
-        if (e.shiftKey) ctl += "shift-";
-        if (e.repeat) ctl += "repeat-";
-        if (ctl) console.log(`ctl: ${ctl}`);
-      }
-
       if (e.code in specialKeys) specialKeys[e.code]();
 
       if (
@@ -179,14 +208,7 @@
         let idx = 0;
         if (e.getModifierState("Shift")) idx += 1;
         if (e.getModifierState("Alt")) idx += 2;
-        insertHtmlAtSelectionEnd(keyMap[state.lang][e.code][idx], false);
-        // range = document.selection.createRange();
-        // range.collapse(isBefore);
-        // range.pasteHTML(keyMap[state.lang][e.code][idx]);
-        //div.setRangeText(keyMap[state.lang][e.code][idx]);
-        //div.setSelectionRange(start + 1, end1 + 1);
-        // ++div.SelectionStart;
-        // ++div.SelectionEnd;
+        insertTypedText(keyMap[state.lang][e.code][idx]);
       } else {
         // div.setRangeText(e.key);
         // div.setRangeText(e.key);
