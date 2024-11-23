@@ -18,7 +18,7 @@
     .toppane {
       grid-area: 1 / 1 / 2 / 3;
       display: grid;
-      grid-template-columns: 25px 25px 25px auto 25px;
+      grid-template-columns: 75px auto 25px;
       background-color: #f90;
       height: 100%;
     }
@@ -52,17 +52,21 @@
     .toppane button {
       background-color: #900;
       color: white;
-      border: 1px solid #900;
+      border: none;
       cursor: pointer;
       height: 100%;
+      width: 25px;
     }
     .btn-right {
       margin-left: auto;
     }
     .win-title {
       text-align: center;
-      color: #000;
+      color: #900;
       height: 25px;
+    }
+    .btn-grp {
+      display: flex;
     }
   </style>
 
@@ -70,15 +74,17 @@
   <div class="editwin">
     <div class="linenum"></div>
     <div class="toppane">
-      <button class="button-sa">ॐ</button>
-      <button class="button-kn">ಅ</button>
-      <button class="button-en">A</button>
+      <div class="btn-grp">
+        <button class="btn-sa">ॐ</button>
+        <button class="btn-kn">ಅ</button>
+        <button class="btn-en">A</button>
+      </div>
       <div class="win-title">
         भगवद्गीता
       </div>
       <button class="button-close btn-right">✕</button>
     </div>
-    <div class="editarea" contenteditable="true" autocomplte="off"></div>
+    <div id="test1" class="editarea" contenteditable="true" autocomplte="off"></div>
     <div class="bottompane">
       <input></input>
     </div>
@@ -91,14 +97,17 @@
       esc: false,
       repeatCount: "",
     };
-    document.querySelector("#inp_lang").
-      addEventListener("change", (event) => {state.lang = event.target.value;console.log(event)});
-    document.querySelectorAll(".btn-group").addEventListener("command", (event) => {
-      if (event.command == "sa")
-        console.log("sa selected")
-    })
     window.addEventListener("load", (event) => {
-      state.lang = document.querySelector("#inp_lang").value;
+    })
+    document.querySelectorAll(".btn-grp > button").forEach((elem) => {
+      elem.addEventListener("click", (event) => {
+        const parent = event.target.parentElement;
+        [...parent.children].forEach((e) => {e.style.setProperty("background-color", "#887")})
+        event.target.style.setProperty("background-color", "#900")
+        const cls = event.target.classList;
+        state.lang = cls.contains('btn-sa') ? 'sa' : cls.contains('btn-kn') ? 'kn' : 'en';
+        document.querySelector('#test1').focus();
+      })
     })
 
     const keyMap = {
@@ -171,7 +180,7 @@
         KeyY: ["य", "ै", "ऐ", "य़"],
         KeyZ: ["ञ", "ङ", "", ""],
       },
-      en: {},
+      en: {}
     };
 
     function insertTypedText(html) {
