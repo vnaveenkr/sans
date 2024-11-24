@@ -1,0 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit:ital@0;1&family=Tiro+Kannada:ital@0;1&display=swap");
+[lang="sa"] {
+  font-family: "Tiro Devanagari Sanskrit", serif;
+}
+[lang="kn"] {
+  font-family: "Tiro Kannada", serif;
+}
+.shloka p {
+  text-align: center;
+  width: 25em;
+  border: 1px solid #900;
+  border-radius: 10px;
+}
+.shloka p:hover {
+  background-color: #ddd;
+}
+.shloka .time-range {
+  display: none;
+}
+.shloka .spkr-btn {
+  float: left;
+  border: none;
+  background: none;
+}
+
+class IntervalPlayer
