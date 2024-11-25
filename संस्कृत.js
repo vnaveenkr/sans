@@ -34,14 +34,26 @@ function playAudioInterval(interval) {
 class IntervalPlayer {
   constructor(audioElem) {
     this.player = audioElem;
-    this.player.addEventListener("timeupdate", () => {
+    /* this.player.addEventListener("timeupdate", () => {
       if (this.player.currentTime >= this.playEnd) {
         this.player.pause();
         if (this.func) this.func(this.arg);
       }
-    });
+    }); */
+  }
+  cancelTimer() {
+    if (typeof this.timer === "number") {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
+  }
+  onTimeout() {
+    this.player.pause();
+    if (this.func) this.func(this.arg);
+    this.cancelTimer();
   }
   playInterval(interval, arg, func) {
+    this.cancelTimer();
     if (this.playStart == interval[0]) {
       if (this.player.paused) {
         this.player.currentTime = this.pauseTime;
@@ -57,8 +69,10 @@ class IntervalPlayer {
       this.playStart = interval[0];
       this.playEnd = interval[1];
       if (this.func) this.func(this.arg);
+
       this.arg = arg;
       this.func = func;
+      this.timer = setTimeout(this.onTimeout, 1000*(imterval[1] - interval[0]);
       this.player.currentTime = interval[0];
       this.player.play();
     }
