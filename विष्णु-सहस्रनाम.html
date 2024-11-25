@@ -1187,18 +1187,34 @@
       e.textContent = "🔈";
       console.log(e);
     }
-    const player = new IntervalPlayer(document.querySelector("#audio_src"));
-    [...document.querySelectorAll(".shloka")].forEach((elem) => {
+    function playing(e) {
+      e.textContent = "🔊";
+      console.log(e);
+    }
+    let timeTable = [];
+    [...document.querySelectorAll(".shloka")].forEach((elem, idx) => {
       const str = elem.querySelector(".time-range").innerHTML;
       const tr = str == "" ? null : timeRange(str);
       const spkr = document.createElement("button");
       spkr.textContent = "🔈";
+      const rec = { interval: tr, ref: spkr };
+      timeTable.push(rec);
       spkr.classList.add("spkr-btn");
       spkr.addEventListener("click", (event) => {
-        player.playInterval(tr, spkr, paused);
-        event.target.textContent = "🔊";
+        player.playInterval(idx);
+      });
+      elem.addEventListener("dblclick", (event) => {
+        event.stopImmediatePropagation();
+        player.setPlayAll(true, idx);
+        console.log("setting all");
       });
       elem.prepend(spkr);
     });
+    const player = new IntervalPlayer(
+      document.querySelector("#audio_src"),
+      timeTable,
+      paused,
+      playing,
+    );
   </script>
 </body>
