@@ -12,7 +12,9 @@ function sa2kn(str) {
     .split("")
     .map((e) => {
       const p = e.charCodeAt(0);
-      return String.fromCharCode(p >= 0x0900 && p <= 0x97f ? p + 0x380 : p);
+      return String.fromCharCode(
+        p >= 0x0900 && p <= 0x97f && p != 0x0964 && p != 0x965 ? p + 0x380 : p,
+      );
     })
     .join("");
 }

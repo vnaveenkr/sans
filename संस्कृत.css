@@ -5,7 +5,8 @@
 [lang="kn"] {
   font-family: "Tiro Kannada", serif;
 }
-.shloka p {
+.shloka p,
+.shloka-alt p {
   text-align: center;
   width: 25em;
   border: 1px solid #900;
@@ -22,5 +23,3 @@
   border: none;
   background: none;
 }
-
-class IntervalPlayer

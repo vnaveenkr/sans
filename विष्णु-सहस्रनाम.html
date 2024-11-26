@@ -1185,11 +1185,13 @@
   <script>
     function paused(e) {
       e.textContent = "🔈";
-      console.log(e);
     }
     function playing(e) {
       e.textContent = "🔊";
-      console.log(e);
+      e.scrollIntoView({ behavior: "smooth", block: "center" });
+      let psa = e.parentElement.querySelector("[lang='sa'");
+      shlokaAlt.querySelector("[lang='kn']").innerHTML = sa2kn(psa.innerHTML);
+      psa.after(shlokaAlt);
     }
     let timeTable = [];
     [...document.querySelectorAll(".shloka")].forEach((elem, idx) => {
@@ -1206,7 +1208,6 @@
       elem.addEventListener("dblclick", (event) => {
         event.stopImmediatePropagation();
         player.setPlayAll(true, idx);
-        console.log("setting all");
       });
       elem.prepend(spkr);
     });
@@ -1216,5 +1217,9 @@
       paused,
       playing,
     );
+    let shlokaAlt = document.createElement("div");
+    shlokaAlt.appendChild(document.createElement("p"));
+    shlokaAlt.classList.add("shloka-alt");
+    shlokaAlt.querySelector("p").setAttribute("lang", "kn");
   </script>
 </body>
