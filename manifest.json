@@ -1,0 +1,6 @@
+{
+  "name": "विष्णु-सहस्रनाम",
+  "start_url": "/sans/",
+  "display": "standalone",
+  "icons": [{ "src": "/sans/vishnu2.png", "sizes": "512x512" }]
+}
