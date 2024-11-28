@@ -5,15 +5,17 @@
 [lang="kn"] {
   font-family: "Tiro Kannada", serif;
 }
-.shloka p,
-.shloka-alt p {
+.shloka p {
   text-align: center;
   width: 25em;
   border: 1px solid #900;
   border-radius: 10px;
+  user-select: none;
 }
-.shloka p:hover {
-  background-color: #ddd;
+.shloka-alt p {
+  text-align: center;
+  border: none;
+  user-select: none;
 }
 .shloka .time-range {
   display: none;

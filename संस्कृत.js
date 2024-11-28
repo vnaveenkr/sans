@@ -38,7 +38,7 @@ class IntervalPlayer {
   }
 
   findRef(time) {
-    return this.timeTable.find((x) => x.interval[0] >= time);
+    return this.timeTable.find((x) => x.interval[1] >= time);
   }
 
   cancelTimer() {
@@ -51,13 +51,17 @@ class IntervalPlayer {
   onTimeout(obj) {
     obj.cancelTimer();
     if (obj.playall) {
-      const rec = obj.findRef(obj.player.currentTime);
       if (obj.ref) obj.onpause(obj.ref);
+      const rec = obj.findRef(obj.player.currentTime);
+      console.log(
+        `${obj.player.currentTime}: ${rec.interval[0]} ${rec.interval[1]}`,
+      );
       obj.ref = rec.ref;
-      obj.playPlayer(rec);
+      obj.onplay(obj.ref);
+      obj.ref.scrollIntoView({ behavior: "smooth", block: "center" });
       obj.timer = setTimeout(
         obj.onTimeout,
-        1000 * (rec.interval[1] - rec.interval[0]),
+        1000 * (rec.interval[1] - obj.player.currentTime),
         obj,
       );
     } else {
@@ -89,10 +93,12 @@ class IntervalPlayer {
 
   playInterval(idx) {
     this.playall = false;
+    console.log("playall:F");
     const rec = this.timeTable[idx];
     if (this.ref === rec.ref) {
-      if (this.player.paused) {
+      if (this.player.paused && this.playPause) {
         this.playPlayer(rec, this.playPause);
+        this.playPause = undefined;
       } else {
         this.pausePlayer();
       }
@@ -102,6 +108,7 @@ class IntervalPlayer {
   }
 
   setPlayAll(val, idx) {
+    console.log("playall:Y");
     this.playall = val;
     if (val) {
       const rec = this.timeTable[idx];

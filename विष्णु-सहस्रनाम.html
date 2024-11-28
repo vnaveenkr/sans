@@ -4,6 +4,7 @@
   <title>विष्णु-सहस्रनाम</title>
   <meta name="viewport" content="height=device-height, initial-scale=1.0" />
   <link rel="stylesheet" href="संस्कृत.css" />
+  <link rel="manifest" href="manifest.json" />
   <script src="संस्कृत.js"></script>
 </head>
 <body>
@@ -1185,13 +1186,15 @@
   <script>
     function paused(e) {
       e.textContent = "🔈";
+      let psa = e.parentElement.querySelector("[lang='sa'");
+      psa.style.backgroundColor = "#fff";
     }
     function playing(e) {
       e.textContent = "🔊";
-      e.scrollIntoView({ behavior: "smooth", block: "center" });
       let psa = e.parentElement.querySelector("[lang='sa'");
       shlokaAlt.querySelector("[lang='kn']").innerHTML = sa2kn(psa.innerHTML);
       psa.after(shlokaAlt);
+      psa.style.background = "#ddd";
     }
     let timeTable = [];
     [...document.querySelectorAll(".shloka")].forEach((elem, idx) => {
