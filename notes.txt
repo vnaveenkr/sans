@@ -4,3 +4,4 @@ https://w3c.github.io/editing/docs/EditContext/explainer.html
 https://www.geeksforgeeks.org/making-a-simple-pwa-under-5-minutes/
 https://www-users.cse.umn.edu/~saad/books.html
 https://codelabs.developers.google.com/your-first-webgpu-app#0
+https://github.com/GoogleCloudPlatform/web-docs-samples/tree/master/vision/explore-api
