@@ -6,3 +6,4 @@ https://www-users.cse.umn.edu/~saad/books.html
 https://codelabs.developers.google.com/your-first-webgpu-app#0
 https://github.com/GoogleCloudPlatform/web-docs-samples/tree/master/vision/explore-api
 https://docs.github.com/en/rest/guides/scripting-with-the-rest-api-and-javascript?apiVersion=2022-11-28
+https://github.com/tanaikech/ResumableUploadForGoogleDrive_js
