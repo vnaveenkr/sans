@@ -8,3 +8,14 @@ https://github.com/GoogleCloudPlatform/web-docs-samples/tree/master/vision/explo
 https://docs.github.com/en/rest/guides/scripting-with-the-rest-api-and-javascript?apiVersion=2022-11-28
 https://github.com/tanaikech/ResumableUploadForGoogleDrive_js
 https://dept.math.lsa.umich.edu/~tfylam/AMSBowdoin.pdf
+https://www.math.uwaterloo.ca/~dgwagner/Networks.pdf
+https://www.math.ucdavis.edu/~saito/data/acha.read.s11/kook-combi-greensf.pdf
+https://www.nature.com/articles/s41598-024-80899-w.pdf
+file:///home/naveen/tmp/RS_rnetworks_2010.pdf
+https://pureportal.coventry.ac.uk/files/4029455/Two%20point%20COMB.pdf
+https://deepblue.lib.umich.edu/bitstream/handle/2027.42/113393/yisu_1.pdf?sequence=1
+https://sites.math.washington.edu/~morrow/papers/collin-thesis.pdf
+https://dmtcs.episciences.org/2407/pdf
+https://dept.math.lsa.umich.edu/~tfylam/AMStalk2.pdf
+https://msp.org/ant/2015/9-6/ant-v9-n6-p04-p.pdf
+https://msp.org/ant/2015/9-6/ant-v9-n6-p04-p.pdf
