@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Interactive Cubic Bézier Curve</title>
+    <style>
+      canvas {
+        border: 1px solid #000;
+      }
+      .container {
+        margin: 20px;
+      }
+      .instructions {
+        margin-bottom: 10px;
+        font-family: Arial, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="instructions">
+        Drag the control points (red dots) to modify the curve
+      </div>
+      <canvas id="bezierCanvas" width="600" height="400"></canvas>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("bezierCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // Control points
+      let points = [
+        { x: 100, y: 200 }, // P0
+        { x: 200, y: 100 }, // P1
+        { x: 400, y: 300 }, // P2
+        { x: 500, y: 200 }, // P3
+      ];
+
+      let isDragging = false;
+      let selectedPoint = null;
+
+      // Calculate point on cubic Bézier curve
+      function calculateBezierPoint(t, p0, p1, p2, p3) {
+        const mt = 1 - t;
+        return {
+          x:
+            mt * mt * mt * p0.x +
+            3 * mt * mt * t * p1.x +
+            3 * mt * t * t * p2.x +
+            t * t * t * p3.x,
+          y:
+            mt * mt * mt * p0.y +
+            3 * mt * mt * t * p1.y +
+            3 * mt * t * t * p2.y +
+            t * t * t * p3.y,
+        };
+      }
+
+      // Draw the curve and control points
+      function draw() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw Bézier curve
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+
+        // Draw curve using multiple segments
+        for (let t = 0; t <= 1; t += 0.01) {
+          const point = calculateBezierPoint(
+            t,
+            points[0],
+            points[1],
+            points[2],
+            points[3],
+          );
+          ctx.lineTo(point.x, point.y);
+        }
+
+        ctx.strokeStyle = "blue";
+        ctx.stroke();
+
+        // Draw control lines
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        ctx.lineTo(points[1].x, points[1].y);
+        ctx.lineTo(points[2].x, points[2].y);
+        ctx.lineTo(points[3].x, points[3].y);
+        ctx.strokeStyle = "#888";
+        ctx.setLineDash([5, 5]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw control points
+        points.forEach((point, index) => {
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = "red";
+          ctx.fill();
+          ctx.stroke();
+        });
+      }
+
+      // Handle mouse events
+      canvas.addEventListener("mousedown", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        points.forEach((point, index) => {
+          const dx = point.x - x;
+          const dy = point.y - y;
+          if (dx * dx + dy * dy < 100) {
+            // If within 10 pixels
+            isDragging = true;
+            selectedPoint = index;
+          }
+        });
+      });
+
+      canvas.addEventListener("mousemove", (e) => {
+        if (isDragging && selectedPoint !== null) {
+          const rect = canvas.getBoundingClientRect();
+          points[selectedPoint].x = e.clientX - rect.left;
+          points[selectedPoint].y = e.clientY - rect.top;
+          draw();
+        }
+      });
+
+      canvas.addEventListener("mouseup", () => {
+        isDragging = false;
+        selectedPoint = null;
+      });
+
+      // Initial draw
+      draw();
+    </script>
+  </body>
+</html>

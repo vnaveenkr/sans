@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Interactive Cubic Bézier Curve (SVG)</title>
+    <style>
+      .container {
+        margin: 20px;
+      }
+      .instructions {
+        margin-bottom: 10px;
+        font-family: Arial, sans-serif;
+      }
+      .control-point {
+        cursor: move;
+      }
+      .control-line {
+        stroke: #888;
+        stroke-width: 1;
+        stroke-dasharray: 5, 5;
+      }
+      .bezier-curve {
+        stroke: blue;
+        stroke-width: 2;
+        fill: none;
+      }
+      .control-point circle {
+        fill: red;
+        stroke: black;
+        stroke-width: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="instructions">
+        Drag the control points (red dots) to modify the curve
+      </div>
+      <svg width="600" height="400" style="border: 1px solid #000">
+        <!-- Control Lines -->
+        <path class="control-line" />
+
+        <!-- Bezier Curve -->
+        <path class="bezier-curve" />
+
+        <!-- Control Points -->
+        <g class="control-points"></g>
+      </svg>
+    </div>
+
+    <script>
+      const svg = document.querySelector("svg");
+      const bezierPath = document.querySelector(".bezier-curve");
+      const controlLine = document.querySelector(".control-line");
+      const controlPointsGroup = document.querySelector(".control-points");
+
+      // Initial control points
+      const points = [
+        { x: 100, y: 200 }, // P0
+        { x: 200, y: 100 }, // P1
+        { x: 400, y: 300 }, // P2
+        { x: 500, y: 200 }, // P3
+      ];
+
+      let selectedPoint = null;
+      let isDragging = false;
+
+      // Create control points
+      function createControlPoints() {
+        controlPointsGroup.innerHTML = "";
+        points.forEach((point, index) => {
+          const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          g.classList.add("control-point");
+          g.setAttribute("data-index", index);
+
+          const circle = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "circle",
+          );
+          circle.setAttribute("cx", point.x);
+          circle.setAttribute("cy", point.y);
+          circle.setAttribute("r", 6);
+
+          g.appendChild(circle);
+          controlPointsGroup.appendChild(g);
+        });
+      }
+
+      // Update paths
+      function updatePaths() {
+        // Update Bézier curve
+        const bezierCommand = `M ${points[0].x},${points[0].y} C ${points[1].x},${points[1].y} ${points[2].x},${points[2].y} ${points[3].x},${points[3].y}`;
+        bezierPath.setAttribute("d", bezierCommand);
+
+        // Update control lines
+        const lineCommand = `M ${points[0].x},${points[0].y} L ${points[1].x},${points[1].y} ${points[2].x},${points[2].y} ${points[3].x},${points[3].y}`;
+        controlLine.setAttribute("d", lineCommand);
+      }
+
+      // Handle dragging
+      function startDrag(e) {
+        if (e.target.closest(".control-point")) {
+          selectedPoint = e.target.closest(".control-point");
+          isDragging = true;
+        }
+      }
+
+      function drag(e) {
+        if (isDragging && selectedPoint) {
+          e.preventDefault();
+
+          const svg = document.querySelector("svg");
+          const ctm = svg.getScreenCTM();
+          const index = parseInt(selectedPoint.getAttribute("data-index"));
+
+          // Get mouse position relative to SVG
+          const mouseX = (e.clientX - ctm.e) / ctm.a;
+          const mouseY = (e.clientY - ctm.f) / ctm.d;
+
+          // Update point position
+          points[index].x = mouseX;
+          points[index].y = mouseY;
+
+          // Update visual elements
+          selectedPoint.querySelector("circle").setAttribute("cx", mouseX);
+          selectedPoint.querySelector("circle").setAttribute("cy", mouseY);
+
+          updatePaths();
+        }
+      }
+
+      function endDrag() {
+        isDragging = false;
+        selectedPoint = null;
+      }
+
+      // Add event listeners
+      svg.addEventListener("mousedown", startDrag);
+      svg.addEventListener("mousemove", drag);
+      svg.addEventListener("mouseup", endDrag);
+      svg.addEventListener("mouseleave", endDrag);
+
+      // Initial setup
+      createControlPoints();
+      updatePaths();
+    </script>
+  </body>
+</html>
