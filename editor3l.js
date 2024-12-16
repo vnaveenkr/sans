@@ -84,7 +84,7 @@ const Editor3l_style = `
     .editwin {
       position: absolute;
       left: 100px;
-      top:50px;
+      top: 50px;
       font-family: "Tiro", serif;
       display: grid;
       grid-template-rows: 25px minmax(100px, auto) 25px;
@@ -101,6 +101,7 @@ const Editor3l_style = `
       grid-template-columns: 75px auto 50px;
       background-color: #f90;
       height: 100%;
+      cursor: move;
     }
     .bottompane {
       grid-area: 3 / 1 / 4 / 3;
@@ -120,6 +121,7 @@ const Editor3l_style = `
       font-weight: 400;
       font-style: normal;
       white-space: pre-wrap;
+      background-color: #ffe;
       overflow:scroll;
       border: 1px solid #f90;
       border: none;
@@ -136,7 +138,8 @@ const Editor3l_style = `
       cursor: pointer;
       height: 100%;
       width: 25px;
-    }
+      user-select: none;
+      }
     .btn-right {
       margin-left: auto;
     }
@@ -159,7 +162,7 @@ class Editor3L extends HTMLElement {
     lang: "en",
     esc: false,
   };
-
+  #dragState = { parentPos: [0, 0], childPos: [0, 0] };
   constructor() {
     super();
   }
@@ -168,10 +171,11 @@ class Editor3L extends HTMLElement {
     this.#shadow = this.attachShadow({ mode: "open" });
     const editwin = document.createElement("div");
     editwin.setAttribute("class", "editwin");
+    editwin.setAttribute("draggable", true);
     const win_title = this.getAttribute("data-title") || "No-Name";
     editwin.innerHTML = `
       <div class="linenum"></div>
-      <div class="toppane">
+      <div class="toppane" draggable="true">
         <div class="btn-grp-lang">
           <button data-lang="sa">ॐ</button>
           <button data-lang="kn">ಅ</button>
@@ -209,6 +213,10 @@ class Editor3L extends HTMLElement {
     div.addEventListener("keydown", (e) => this.keyDown(e));
     div.addEventListener("keyup", (e) => this.keyUp(e));
     div.addEventListener("click", (e) => this.keyClick(e), false);
+
+    div = this.#shadow.querySelector(".toppane");
+    div.addEventListener("dragstart", (e) => this.dragStart(e));
+    div.addEventListener("dragend", (e) => this.dragEnd(e));
   }
 
   insertTypedText(html) {
@@ -281,6 +289,31 @@ class Editor3L extends HTMLElement {
     set1.removeAllRanges();
     set1.addRange(setpos);
     tag.focus();
+  }
+
+  dragStart(e) {
+    const s = this.#dragState;
+    const style = getComputedStyle(e.target.parentElement);
+    s.parentPos[0] = parseInt(style.left);
+    s.parentPos[1] = parseInt(style.top);
+    s.childPos[0] = e.pageX;
+    s.childPos[1] = e.pageY;
+    console.log(
+      `p: [${this.#dragState.parentPos[0]}, ${this.#dragState.parentPos[1]}]`,
+      `c: [${this.#dragState.childPos[0]}, ${this.#dragState.childPos[1]}]`,
+    );
+  }
+
+  dragEnd(e) {
+    const s = this.#dragState;
+    s.parentPos[0] += e.pageX - s.childPos[0];
+    s.parentPos[1] += e.pageY - s.childPos[1];
+    e.target.parentElement.style.left = s.parentPos[0] + "px";
+    e.target.parentElement.style.top = s.parentPos[1] + "px";
+    console.log(
+      `pe: [${this.#dragState.parentPos[0]}, ${this.#dragState.parentPos[1]}]`,
+      `ce: [${this.#dragState.childPos[0]}, ${this.#dragState.childPos[1]}]`,
+    );
   }
 }
 customElements.define("editor-3l", Editor3L);
