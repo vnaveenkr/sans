@@ -157,6 +157,7 @@ const Editor3l_style = `
     `;
 
 class Editor3L extends HTMLElement {
+  static winInstances = [];
   #shadow;
   #state = {
     lang: "en",
@@ -171,7 +172,7 @@ class Editor3L extends HTMLElement {
     this.#shadow = this.attachShadow({ mode: "open" });
     const editwin = document.createElement("div");
     editwin.setAttribute("class", "editwin");
-    editwin.setAttribute("draggable", true);
+    editwin.setAttribute("draggable", "true");
     const win_title = this.getAttribute("data-title") || "No-Name";
     editwin.innerHTML = `
       <div class="linenum"></div>
@@ -198,6 +199,10 @@ class Editor3L extends HTMLElement {
     this.#shadow.appendChild(editwin);
 
     this.#shadow.querySelectorAll(".btn-grp-lang > button").forEach((elem) => {
+      elem.style.setProperty(
+        "background-color",
+        elem.getAttribute("data-lang") == this.#state.lang ? "#900" : "#887",
+      );
       elem.addEventListener("click", (event) => {
         const parent = event.target.parentElement;
         [...parent.children].forEach((e) => {
@@ -215,8 +220,24 @@ class Editor3L extends HTMLElement {
     div.addEventListener("click", (e) => this.keyClick(e), false);
 
     div = this.#shadow.querySelector(".toppane");
-    div.addEventListener("dragstart", (e) => this.dragStart(e));
-    div.addEventListener("dragend", (e) => this.dragEnd(e));
+    div.addEventListener("dragstart", (e) => this.dragStart(e), {
+      capture: false,
+    });
+    div.addEventListener("dragend", (e) => this.dragEnd(e), { capture: true });
+    div.addEventListener("click", (e) => this.bringFront2(e), {
+      capture: false,
+    });
+
+    editwin.addEventListener("click", (e) => this.bringFront2(e), {
+      capture: false,
+    });
+    editwin.addEventListener("dragstart", (e) => this.dragStart(e), {
+      capture: true,
+    });
+    editwin.addEventListener("dragend", (e) => this.dragEnd(e), {
+      capture: true,
+    });
+    Editor3L.winInstances.push(editwin);
   }
 
   insertTypedText(html) {
@@ -245,10 +266,6 @@ class Editor3L extends HTMLElement {
       if (e.getModifierState("Shift")) idx += 1;
       if (e.getModifierState("Alt")) idx += 2;
       this.insertTypedText(Editor3l_keyMap[this.#state.lang][e.code][idx]);
-    } else {
-      // div.setRangeText(e.key);
-      // div.setRangeText(e.key);
-      // div.setSelectionRange(start+1, end1+1);
     }
   }
 
@@ -265,7 +282,6 @@ class Editor3L extends HTMLElement {
       textNode = range.offsetNode;
       offset = range.offset;
     }
-    console.log(`node: ${textNode.id}: offset: ${offset}`);
   }
 
   keyDir() {
@@ -291,29 +307,59 @@ class Editor3L extends HTMLElement {
     tag.focus();
   }
 
+  bringFront(elem) {
+    Editor3L.winInstances.forEach((w) => {
+      w.style.zIndex = "1";
+    });
+    elem.style.zIndex = "2";
+  }
+
+  bringFront2(e) {
+    if (e.currentTarget.classList.contains("editwin")) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.bringFront(e.currentTarget);
+    }
+  }
+
   dragStart(e) {
-    const s = this.#dragState;
-    const style = getComputedStyle(e.target.parentElement);
-    s.parentPos[0] = parseInt(style.left);
-    s.parentPos[1] = parseInt(style.top);
-    s.childPos[0] = e.pageX;
-    s.childPos[1] = e.pageY;
     console.log(
-      `p: [${this.#dragState.parentPos[0]}, ${this.#dragState.parentPos[1]}]`,
-      `c: [${this.#dragState.childPos[0]}, ${this.#dragState.childPos[1]}]`,
+      `start current: ${e.currentTarget.classList} target: ${e.target.classList}`,
     );
+    if (
+      e.target.classList.contains("toppane") &&
+      e.currentTarget.classList.contains("editwin")
+    ) {
+      console.log("handling");
+      // e.preventDefault();
+      // e.stopPropagation();
+      const s = this.#dragState;
+      const style = getComputedStyle(e.target.parentElement);
+      s.parentPos[0] = parseInt(style.left);
+      s.parentPos[1] = parseInt(style.top);
+      s.childPos[0] = e.pageX;
+      s.childPos[1] = e.pageY;
+    }
   }
 
   dragEnd(e) {
-    const s = this.#dragState;
-    s.parentPos[0] += e.pageX - s.childPos[0];
-    s.parentPos[1] += e.pageY - s.childPos[1];
-    e.target.parentElement.style.left = s.parentPos[0] + "px";
-    e.target.parentElement.style.top = s.parentPos[1] + "px";
     console.log(
-      `pe: [${this.#dragState.parentPos[0]}, ${this.#dragState.parentPos[1]}]`,
-      `ce: [${this.#dragState.childPos[0]}, ${this.#dragState.childPos[1]}]`,
+      `end current: ${e.currentTarget.classList} target: ${e.target.classList}`,
     );
+    if (
+      e.target.classList.contains("toppane") &&
+      e.currentTarget.classList.contains("editwin")
+    ) {
+      console.log("handling");
+      // e.preventDefault();
+      // e.stopPropagation();
+      const s = this.#dragState;
+      s.parentPos[0] += e.pageX - s.childPos[0];
+      s.parentPos[1] += e.pageY - s.childPos[1];
+      e.target.parentElement.style.left = s.parentPos[0] + "px";
+      e.target.parentElement.style.top = s.parentPos[1] + "px";
+      this.bringFront(e.target.parentElement);
+    }
   }
 }
 customElements.define("editor-3l", Editor3L);
