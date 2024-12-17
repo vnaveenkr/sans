@@ -176,7 +176,7 @@ class Editor3L extends HTMLElement {
     const win_title = this.getAttribute("data-title") || "No-Name";
     editwin.innerHTML = `
       <div class="linenum"></div>
-      <div class="toppane" draggable="true">
+      <div class="toppane">
         <div class="btn-grp-lang">
           <button data-lang="sa">ॐ</button>
           <button data-lang="kn">ಅ</button>
@@ -217,26 +217,11 @@ class Editor3L extends HTMLElement {
     let div = this.#shadow.querySelector(".editarea");
     div.addEventListener("keydown", (e) => this.keyDown(e));
     div.addEventListener("keyup", (e) => this.keyUp(e));
-    div.addEventListener("click", (e) => this.keyClick(e), false);
+    div.addEventListener("click", (e) => this.keyClick(e));
 
-    div = this.#shadow.querySelector(".toppane");
-    div.addEventListener("dragstart", (e) => this.dragStart(e), {
-      capture: false,
-    });
-    div.addEventListener("dragend", (e) => this.dragEnd(e), { capture: true });
-    div.addEventListener("click", (e) => this.bringFront2(e), {
-      capture: false,
-    });
-
-    editwin.addEventListener("click", (e) => this.bringFront2(e), {
-      capture: false,
-    });
-    editwin.addEventListener("dragstart", (e) => this.dragStart(e), {
-      capture: true,
-    });
-    editwin.addEventListener("dragend", (e) => this.dragEnd(e), {
-      capture: true,
-    });
+    editwin.addEventListener("click", (e) => this.bringFront2(e));
+    editwin.addEventListener("dragstart", (e) => this.dragStart(e));
+    editwin.addEventListener("dragend", (e) => this.dragEnd(e));
     Editor3L.winInstances.push(editwin);
   }
 
@@ -326,15 +311,18 @@ class Editor3L extends HTMLElement {
     console.log(
       `start current: ${e.currentTarget.classList} target: ${e.target.classList}`,
     );
+    console.log(this.#shadow.elementFromPoint(e.clientX, e.clientY).classList);
+
     if (
-      e.target.classList.contains("toppane") &&
-      e.currentTarget.classList.contains("editwin")
+      this.#shadow
+        .elementFromPoint(e.clientX, e.clientY)
+        .classList.contains("win-title")
     ) {
       console.log("handling");
       // e.preventDefault();
       // e.stopPropagation();
       const s = this.#dragState;
-      const style = getComputedStyle(e.target.parentElement);
+      const style = getComputedStyle(e.target);
       s.parentPos[0] = parseInt(style.left);
       s.parentPos[1] = parseInt(style.top);
       s.childPos[0] = e.pageX;
@@ -346,20 +334,15 @@ class Editor3L extends HTMLElement {
     console.log(
       `end current: ${e.currentTarget.classList} target: ${e.target.classList}`,
     );
-    if (
-      e.target.classList.contains("toppane") &&
-      e.currentTarget.classList.contains("editwin")
-    ) {
-      console.log("handling");
-      // e.preventDefault();
-      // e.stopPropagation();
-      const s = this.#dragState;
-      s.parentPos[0] += e.pageX - s.childPos[0];
-      s.parentPos[1] += e.pageY - s.childPos[1];
-      e.target.parentElement.style.left = s.parentPos[0] + "px";
-      e.target.parentElement.style.top = s.parentPos[1] + "px";
-      this.bringFront(e.target.parentElement);
-    }
+    console.log("handling");
+    // e.preventDefault();
+    // e.stopPropagation();
+    const s = this.#dragState;
+    s.parentPos[0] += e.pageX - s.childPos[0];
+    s.parentPos[1] += e.pageY - s.childPos[1];
+    e.target.style.left = s.parentPos[0] + "px";
+    e.target.style.top = s.parentPos[1] + "px";
+    this.bringFront(e.target);
   }
 }
 customElements.define("editor-3l", Editor3L);
