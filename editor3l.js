@@ -2,6 +2,8 @@ const caretToLineBeg = () => {
   // let div = document.querySelector("#test1");
 };
 
+const vimode = Object.freeze({ normal: 0, insert: 1, command: 2 });
+
 const escMethods = {
   // Digit0: caretToLineBeg,
 };
@@ -77,7 +79,6 @@ const Editor3l_keyMap = {
     KeyZ: ["ञ", "ङ", "", ""],
   },
   en: {},
-  special: {},
 };
 
 const Editor3l_style = `
@@ -162,6 +163,7 @@ class Editor3L extends HTMLElement {
   #state = {
     lang: "en",
     esc: false,
+    mode: vimode.normal,
   };
   #dragState = { parentPos: [0, 0], childPos: [0, 0] };
   constructor() {
@@ -190,7 +192,7 @@ class Editor3L extends HTMLElement {
       </div>
       <div class="editarea" contenteditable="true" autocomplte="off"></div>
       <div class="bottompane">
-        <input></input>
+        <input class="comarea"></input>
       </div>
       `;
     const style = document.createElement("style");
@@ -232,12 +234,30 @@ class Editor3L extends HTMLElement {
     range.collapse(false);
   }
 
+  clr_esc() {}
+
   keyDown(e) {
     let div = this.#shadow.querySelector(".editarea");
     let start = div.selectionStart;
     let end1 = div.selectionEnd;
 
-    if (e.code in Editor3l_keyMap.special) {
+    console.log(e.code);
+    if (e.code === "Escape") {
+      if (this.#state.esc) {
+        this.clr_esc();
+      } else {
+        this.#state.esc = true;
+        console.log(this.#state.esc);
+      }
+    } else if (
+      this.#state.esc &&
+      this.#state.mode == null &&
+      e.code === "Semicolon"
+    ) {
+      console.log("hi");
+      this.#shadow.querySelector(".comarea").innerHTML = ":";
+      this.#shadow.querySelector(".comarea").focus();
+      this.#state.mode = "command";
     }
 
     if (
@@ -300,11 +320,9 @@ class Editor3L extends HTMLElement {
   }
 
   bringFront2(e) {
-    if (e.currentTarget.classList.contains("editwin")) {
-      e.preventDefault();
-      e.stopPropagation();
-      this.bringFront(e.currentTarget);
-    }
+    e.preventDefault();
+    e.stopPropagation();
+    this.bringFront(e.currentTarget);
   }
 
   dragStart(e) {
