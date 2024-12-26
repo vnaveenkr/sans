@@ -174,7 +174,7 @@ class Editor3L extends HTMLElement {
     this.#shadow = this.attachShadow({ mode: "open" });
     const editwin = document.createElement("div");
     editwin.setAttribute("class", "editwin");
-    editwin.setAttribute("draggable", "true");
+    // editwin.setAttribute("draggable", "true");
     const win_title = this.getAttribute("data-title") || "No-Name";
     editwin.innerHTML = `
       <div class="linenum"></div>
@@ -216,15 +216,33 @@ class Editor3L extends HTMLElement {
       });
     });
 
-    let div = this.#shadow.querySelector(".editarea");
-    div.addEventListener("keydown", (e) => this.keyDown(e));
-    div.addEventListener("keyup", (e) => this.keyUp(e));
-    div.addEventListener("click", (e) => this.keyClick(e));
+    {
+      const div = this.#shadow.querySelector(".editarea");
+      div.addEventListener("keydown", (e) => this.keyDown(e));
+      div.addEventListener("keyup", (e) => this.keyUp(e));
+      div.addEventListener("click", (e) => this.keyClick(e));
+    }
 
-    editwin.addEventListener("click", (e) => this.bringFront2(e));
-    editwin.addEventListener("dragstart", (e) => this.dragStart(e));
-    editwin.addEventListener("dragend", (e) => this.dragEnd(e));
-    Editor3L.winInstances.push(editwin);
+    {
+      const div = this.#shadow.querySelector(".win-title");
+      div.addEventListener("mouseenter", (e) =>
+        this.#shadow
+          .querySelector(".editwin")
+          .setAttribute("draggable", "true"),
+      );
+      div.addEventListener("mouseleave", (e) =>
+        this.#shadow
+          .querySelector(".editwin")
+          .setAttribute("draggable", "false"),
+      );
+    }
+
+    {
+      const div = editwin.addEventListener("click", (e) => this.bringFront2(e));
+      editwin.addEventListener("dragstart", (e) => this.dragStart(e));
+      editwin.addEventListener("dragend", (e) => this.dragEnd(e));
+      Editor3L.winInstances.push(editwin);
+    }
   }
 
   insertTypedText(html) {
