@@ -165,7 +165,7 @@ class Editor3L extends HTMLElement {
     esc: false,
     mode: vimode.normal,
   };
-  #dragState = { parentPos: [0, 0], childPos: [0, 0] };
+  #dragState = { isValid: false, parentPos: [0, 0], childPos: [0, 0] };
   constructor() {
     super();
   }
@@ -347,7 +347,11 @@ class Editor3L extends HTMLElement {
     console.log(
       `start current: ${e.currentTarget.classList} target: ${e.target.classList}`,
     );
-    console.log(this.#shadow.elementFromPoint(e.clientX, e.clientY).classList);
+    console.log(
+      this.#shadow
+        .elementFromPoint(e.clientX, e.clientY)
+        .classList.contains("win-title"),
+    );
 
     if (
       this.#shadow
@@ -363,6 +367,7 @@ class Editor3L extends HTMLElement {
       s.parentPos[1] = parseInt(style.top);
       s.childPos[0] = e.pageX;
       s.childPos[1] = e.pageY;
+      s.isValid = true;
     }
   }
 
@@ -374,10 +379,15 @@ class Editor3L extends HTMLElement {
     // e.preventDefault();
     // e.stopPropagation();
     const s = this.#dragState;
-    s.parentPos[0] += e.pageX - s.childPos[0];
-    s.parentPos[1] += e.pageY - s.childPos[1];
-    e.target.style.left = s.parentPos[0] + "px";
-    e.target.style.top = s.parentPos[1] + "px";
+    if (s.isValid) {
+      s.parentPos[0] += e.pageX - s.childPos[0];
+      s.parentPos[1] += e.pageY - s.childPos[1];
+      if (s.parentPos[0] >= 0 && s.parentPos[1] >= 0) {
+        e.target.style.left = s.parentPos[0] + "px";
+        e.target.style.top = s.parentPos[1] + "px";
+      }
+      s.isValid = false;
+    }
     this.bringFront(e.target);
   }
 }
