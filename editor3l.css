@@ -1,8 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit:ital@0;1&family=Tiro+Kannada:ital@0;1&display=swap");
+.material-symbols-outlined {
+  font-size: 16;
+}
 :root {
-  --background-light: #ffeebb;
-  --background-normal: #ffcc33;
-  --background-dark: #900;
-  --foreground-light: #bb8800;
-  --foreground-normal: #997700;
-  --foreground-dark: #664400;
+  --background-light: #fe3;
+  --background-normal: #fc3;
+  --background-dark: #f93;
+  --foreground-light: #c80;
+  --foreground-normal: #fff;
+  --foreground-dark: #900;
+}
+.left-vert-nav {
+  display: flex;
+  flex-direction: column;
+  width: 40px;
+}
+.left-vert-nav button {
+  border: 0;
+  width: 100%;
+  height: 40px;
+  background-color: var(--background-light);
+}
+.left-vert-nav button:hover {
+  background-color: var(--background-dark);
 }

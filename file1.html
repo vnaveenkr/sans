@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text File Editor with Save Location</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+      #editor {
+        width: 100%;
+        height: 400px;
+        margin: 20px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        font-family: monospace;
+      }
+      .button-group {
+        margin: 10px 0;
+      }
+      button {
+        padding: 8px 16px;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+      #status {
+        color: #666;
+        font-style: italic;
+        margin-left: 10px;
+      }
+      .warning {
+        color: #ff4444;
+        font-size: 0.9em;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Text File Editor</h1>
+
+    <div class="button-group">
+      <button onclick="openFile()">Open File</button>
+      <button onclick="saveFile()">Save</button>
+      <button onclick="saveFileAs()">Save As</button>
+      <span id="status"></span>
+    </div>
+
+    <textarea
+      id="editor"
+      placeholder="File content will appear here..."
+    ></textarea>
+
+    <div id="browserSupport" class="warning"></div>
+
+    <script>
+      let currentFileHandle = null;
+      const editor = document.getElementById("editor");
+      const status = document.getElementById("status");
+      const browserSupport = document.getElementById("browserSupport");
+
+      // Check for File System Access API support
+      if (!("showOpenFilePicker" in window)) {
+        browserSupport.textContent =
+          "Your browser does not support the File System Access API. " +
+          "Please use a Chromium-based browser (Chrome, Edge, Opera) for full functionality.";
+      }
+
+      // Show status message
+      function showStatus(message, duration = 3000) {
+        status.textContent = message;
+        setTimeout(() => {
+          status.textContent = "";
+        }, duration);
+      }
+
+      // Open file
+      async function openFile() {
+        try {
+          // Show file picker
+          const [fileHandle] = await window.showOpenFilePicker({
+            types: [
+              {
+                description: "Text Files",
+                accept: {
+                  "text/*": [".txt", ".js", ".html", ".css", ".json"],
+                },
+              },
+            ],
+          });
+
+          currentFileHandle = fileHandle;
+          const file = await fileHandle.getFile();
+          const content = await file.text();
+
+          editor.value = content;
+          showStatus(`Opened: ${file.name}`);
+        } catch (err) {
+          if (err.name !== "AbortError") {
+            console.error("Error opening file:", err);
+            showStatus("Error opening file!");
+          }
+        }
+      }
+
+      // Save to current file
+      async function saveFile() {
+        if (!currentFileHandle) {
+          return saveFileAs();
+        }
+
+        try {
+          const writable = await currentFileHandle.createWritable();
+          await writable.write(editor.value);
+          await writable.close();
+
+          showStatus("File saved successfully!");
+        } catch (err) {
+          console.error("Error saving file:", err);
+          showStatus("Error saving file!");
+        }
+      }
+
+      // Save as new file
+      async function saveFileAs() {
+        try {
+          const fileHandle = await window.showSaveFilePicker({
+            types: [
+              {
+                description: "Text Files",
+                accept: {
+                  "text/plain": [".txt"],
+                },
+              },
+            ],
+          });
+
+          currentFileHandle = fileHandle;
+          const writable = await fileHandle.createWritable();
+          await writable.write(editor.value);
+          await writable.close();
+
+          showStatus("File saved successfully!");
+        } catch (err) {
+          if (err.name !== "AbortError") {
+            console.error("Error saving file:", err);
+            showStatus("Error saving file!");
+          }
+        }
+      }
+
+      // Add warning before leaving page
+      window.addEventListener("beforeunload", function (e) {
+        if (editor.value) {
+          e.preventDefault();
+          e.returnValue = "";
+        }
+      });
+
+      // Add keyboard shortcuts
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey || e.metaKey) {
+          // Ctrl or Command key
+          switch (e.key.toLowerCase()) {
+            case "s":
+              e.preventDefault();
+              if (e.shiftKey) {
+                saveFileAs();
+              } else {
+                saveFile();
+              }
+              break;
+            case "o":
+              e.preventDefault();
+              openFile();
+              break;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
