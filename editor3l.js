@@ -93,14 +93,14 @@ const Editor3l_style = `
       width: 50%;
       height:50%;
       resize: both;
-      border: 3px solid #f90;
+      border: 3px solid var(--border-dark);
       overflow: hidden;
     }
     .toppane {
       grid-area: 1 / 1 / 2 / 3;
       display: grid;
       grid-template-columns: 75px auto 50px;
-      background-color: #f90;
+      background-color: var(--bg-normal);
       height: 100%;
       cursor: move;
     }
@@ -108,12 +108,12 @@ const Editor3l_style = `
       grid-area: 3 / 1 / 4 / 3;
     }
     .bottompane input {
-      border: 1px solid #f90;
+      border: 1px solid var(--border-light);
       width: 100%;
     }
     .linenum {
       grid-area: 2 / 1 / 3 / 2;
-      background-color: #eee;
+      background-color: var(--text-bg-dark);
       border: none;
     }
     .editarea {
@@ -122,18 +122,18 @@ const Editor3l_style = `
       font-weight: 400;
       font-style: normal;
       white-space: pre-wrap;
-      background-color: #ffe;
+      background-color: var(--text-bg-light);
       overflow:scroll;
-      border: 1px solid #f90;
+      border: 1px solid var(--border-normal);
       border: none;
       overflow: scroll;
-      scrollbar-color: #f00 #840 ;
+      scrollbar-color: var(--bg-dark) var(--bg-normal) ;
     }
     .editarea:focus, .bottompane input {
       outline: none;
     }
     .toppane button {
-      background-color: #900;
+      background-color: var(--bg-normal);
       color: white;
       border: none;
       cursor: pointer;
@@ -146,7 +146,7 @@ const Editor3l_style = `
     }
     .win-title {
       text-align: center;
-      color: #900;
+      color: var(--fg-dark)
       height: 25px;
     }
     .btn-grp-lang {
@@ -200,17 +200,22 @@ class Editor3L extends HTMLElement {
     this.#shadow.appendChild(style);
     this.#shadow.appendChild(editwin);
 
+    const styles = getComputedStyle(document.documentElement);
+    const back_dark = styles.getPropertyValue("--bg-dark");
+    const back_normal = styles.getPropertyValue("--bg-normal");
     this.#shadow.querySelectorAll(".btn-grp-lang > button").forEach((elem) => {
       elem.style.setProperty(
         "background-color",
-        elem.getAttribute("data-lang") == this.#state.lang ? "#900" : "#887",
+        elem.getAttribute("data-lang") == this.#state.lang
+          ? back_dark
+          : back_normal,
       );
       elem.addEventListener("click", (event) => {
         const parent = event.target.parentElement;
         [...parent.children].forEach((e) => {
-          e.style.setProperty("background-color", "#887");
+          e.style.setProperty("background-color", back_normal);
         });
-        event.target.style.setProperty("background-color", "#900");
+        event.target.style.setProperty("background-color", back_dark);
         this.#state.lang = event.target.getAttribute("data-lang");
         this.#shadow.querySelector(".editarea").focus();
       });

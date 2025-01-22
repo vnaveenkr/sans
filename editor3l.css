@@ -3,12 +3,20 @@
   font-size: 16;
 }
 :root {
-  --background-light: #fe3;
-  --background-normal: #fc3;
-  --background-dark: #f93;
-  --foreground-light: #c80;
-  --foreground-normal: #fff;
-  --foreground-dark: #900;
+  --bg-light: #fe3;
+  --bg-normal: #fc3;
+  --bg-dark: #f93;
+  --fg-light: #c80;
+  --fg-normal: #fff;
+  --fg-dark: #900;
+  --border-light: #fe3;
+  --border-normal: #fc3;
+  --border-dark: #f93;
+  --text-bg-normal: #ffc;
+  --text-bg-light: #ffe;
+  --text-bg-dark: #ffa;
+  --text-color-normal: #000;
+  --text-color-fade: #aaa;
 }
 .left-vert-nav {
   display: flex;
@@ -19,8 +27,8 @@
   border: 0;
   width: 100%;
   height: 40px;
-  background-color: var(--background-light);
+  background-color: var(--bg-light);
 }
 .left-vert-nav button:hover {
-  background-color: var(--background-dark);
+  background-color: var(--bg-dark);
 }
