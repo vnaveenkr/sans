@@ -6,6 +6,7 @@
   <title>3L test</title>
   <meta name="viewport" content="height=device-height, initial-scale=1.0" />
   <script src="editor3l.js"></script>
+  <script src="fileio.js"></script>
 </head>
 <body>
   <nav class="left-vert-nav">
@@ -16,7 +17,22 @@
   <editor-3l data-title="Test window2" style="width: 400px; height: 300px;"></editor-3l>
 </body>
 <script>
-  const e = document.createElement('editor-3l')
-  document.querySelector('body').appendChild(e)
+async function openFile(event) {
+  const fileref = new FileSystemAccess();
+  try {
+    const content = await fileref.open();
+    if (content) {
+      const e = document.createElement('editor-3l');
+      document.querySelector('body').appendChild(e);
+      e.setAttribute("data-title", fileref.getName());
+      e.setContent(content);
+    }
+  } catch (err) {
+    if (err.name !== "AbortError") {
+      console.error("Error opening file:", err);
+    }
+  }
+}
+document.querySelector("[data-func='open_file']").addEventListener("click", openFile);
 </script>
 </html>

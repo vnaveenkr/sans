@@ -159,6 +159,7 @@ const Editor3l_style = `
 
 class Editor3L extends HTMLElement {
   static winInstances = [];
+  static observedAttributes = ["data-title"];
   #shadow;
   #state = {
     lang: "en",
@@ -248,6 +249,21 @@ class Editor3L extends HTMLElement {
       editwin.addEventListener("dragend", (e) => this.dragEnd(e));
       Editor3L.winInstances.push(editwin);
     }
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.log(`${name} ${oldValue} ${newValue}`);
+    switch (name) {
+      case "data-title":
+        if (oldValue)
+          this.#shadow.querySelector(".win-title").innerHTML = newValue;
+        break;
+    }
+  }
+
+  setContent(content) {
+    this.#shadow.querySelector(".editarea").textContent = content;
+    // this.#shadow.querySelector(".editarea").innerHTML = content;
   }
 
   insertTypedText(html) {
