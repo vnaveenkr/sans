@@ -1,0 +1,63 @@
+<!doctype html>
+<style>
+  .resizable {
+    display: grid;
+    grid-template-rows: 25px auto 25px;
+    grid-template-columns: 25px auto;
+    height: 50%;
+    width: 50%;
+    resize: both;
+    overflow: scroll;
+    border: 3px solid mediumvioletred;
+  }
+
+  .cls1 {
+    widht: 100%;
+    height: 100%;
+    grid-area: 1 / 1 / 2 / 3;
+    background-color: green;
+  }
+
+  .cls2 {
+    widht: 100%;
+    height: 100%;
+    grid-area: 3 / 1 / 4 / 3;
+    background-color: green;
+  }
+
+  .cls3 {
+    widht: 100%;
+    height: 100%;
+    grid-area: 2 / 1 / 3 / 2;
+    background-color: yellow;
+  }
+
+  .cls4 {
+    grid-area: 2 / 2 / 3 / 3;
+    height: 50%;
+    width: 50%;
+    border: 1px solid blue;
+    overflow: scroll;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+<body>
+  <div class="resizable">
+    <div class="cls1">
+      <div class="btn-group">
+        <button class="button-sa">ॐ</button>
+        <button class="button-kn">ಅ</button>
+        <button class="button-en">A</button>
+      </div>
+    </div>
+    <div class="cls3"></div>
+    <div class="cls4">
+      This paragraph is resizable in all directions, because the CSS `resize`
+      property is set to `both` on this element.
+    </div>
+    <div class="cls2">
+      <input></input>
+    </div>
+  </div>
+</body>

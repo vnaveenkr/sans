@@ -1,0 +1,43 @@
+body { /* Prevent the user selecting text in the example */ user-select: none; }
+#draggable { text-align: center; background: pink; } .dropzone { width: 200px;
+height: 20px; background: blueviolet; margin: 10px; padding: 10px; }
+.dropzone.dragover { background-color: purple; } .dragging { opacity: 0.5; }
+
+<div style="position: absolute; left: 20px; top: 30px">
+  <div id="draggable" draggable="true">This div is draggable</div>
+</div>
+<div class="dropzone" id="drop-target"></div>
+
+let dragged; let ppos = {} let cpos = {} /* events fired on the draggable target
+*/ const source = document.getElementById("draggable");
+source.addEventListener("drag", (event) => { // console.log("dragging"); });
+source.addEventListener("dragstart", (event) => { // store a ref. on the dragged
+elem dragged = event.target; // make it half transparent
+event.target.classList.add("dragging"); ppos.top =
+parseInt(event.target.parentElement.style.top); ppos.left =
+parseInt(event.target.parentElement.style.left); cpos.pageX = event.pageX;
+cpos.pageY = event.pageY; console.log(`ppos.top: ${ppos.top} ppos.left:
+${ppos.left} cpos.pageX: ${cpos.pageX} cpos.pageY: ${cpos.pageY}`) });
+source.addEventListener("dragend", (event) => { // reset the transparency
+event.target.classList.remove("dragging"); ppos.left += event.pageX -
+cpos.pageX; ppos.top += event.pageY - cpos.pageY;
+event.target.parentElement.style.top = ppos.top + "px";
+event.target.parentElement.style.left = ppos.left + "px"; console.log(`ppos.top:
+${ppos.top} ppos.left: ${ppos.left} cpos.pageX: ${cpos.pageX} cpos.pageY:
+${cpos.pageY} event.pageX: ${event.pageX} event.pageY: ${event.pageY}`) }); /*
+events fired on the drop targets */ const target =
+document.getElementById("drop-target"); target.addEventListener( "dragover",
+(event) => { // prevent default to allow drop event.preventDefault(); }, false,
+); target.addEventListener("dragenter", (event) => { // highlight potential drop
+target when the draggable element enters it if
+(event.target.classList.contains("dropzone")) {
+event.target.classList.add("dragover"); } });
+target.addEventListener("dragleave", (event) => { // reset background of
+potential drop target when the draggable element leaves it if
+(event.target.classList.contains("dropzone")) {
+event.target.classList.remove("dragover"); } }); target.addEventListener("drop",
+(event) => { // prevent default action (open as link for some elements)
+event.preventDefault(); // move dragged element to the selected drop target if
+(event.target.classList.contains("dropzone")) {
+event.target.classList.remove("dragover"); event.target.appendChild(dragged); }
+});

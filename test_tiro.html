@@ -1,0 +1,64 @@
+<!doctype html>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit:ital@0;1&display=swap");
+  #test1 {
+    font-family: "Tiro Devanagari Sanskrit", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+</style>
+<body>
+  <div id="test1" contenteditable="true">विष्णुर्वषट्कारो</div>
+</body>
+<script>
+  const sa = {
+    KeyA: ["ा", "आ", "अ", "ॲ"],
+    KeyB: ["ब", "भ", "", ""],
+    KeyC: ["च", "छ", "", ""],
+    KeyD: ["द", "ध", "", ""],
+    KeyE: ["ॆ", "े", "ऎ", "े"],
+    KeyF: ["्", "ॄ", "ॠ", ""],
+    KeyG: ["ग", "घ", "", "ꣳ"],
+    KeyH: ["ह", "ः", "", ""],
+    KeyI: ["ि", "ी", "इ", "ई"],
+    KeyJ: ["ज", "झ", "", ""],
+    KeyK: ["क", "ख", "", ""],
+    KeyL: ["ल", "ळ", "", ""],
+    KeyM: ["म", "ं", "", ""],
+    KeyN: ["न", "ण", "", ""],
+    KeyO: ["ॊ", "ो", "ऒ", "ओ"],
+    KeyP: ["प", "फ", "फ़", ""],
+    KeyQ: ["ट", "ठ", "", ""],
+    KeyR: ["र", "ृ", "ऋ", "ऱ"],
+    KeyS: ["स", "श", "", ""],
+    KeyT: ["त", "थ", "", ""],
+    KeyU: ["ु", "ू", "उ", "ऊ"],
+    KeyV: ["व", "ौ", "", ""],
+    KeyW: ["ड", "ढ", "ड", "ढ"],
+    KeyX: ["ष", "़", "", ""],
+    KeyY: ["य", "ै", "ऐ", "य़"],
+    KeyZ: ["ञ", "ङ", "", ""],
+  };
+  function insertHtmlAtSelectionEnd(html) {
+    let range = window.getSelection().getRangeAt(0);
+    range.createContextualFragment("<div>" + html + "</div>");
+    range.collapse(false);
+    range.select();
+  }
+
+  function keyDown(e) {
+    let div = document.querySelector("#test1");
+    let start = div.selectionStart;
+    let end1 = div.selectionEnd;
+
+    if (e.code in sa && !e.getModifierState("Control")) {
+      e.preventDefault();
+      e.stopPropagation();
+      let idx = 0;
+      if (e.getModifierState("Shift")) idx += 1;
+      if (e.getModifierState("Alt")) idx += 2;
+      insertHtmlAtSelectionEnd(sa[e.code][idx]);
+    }
+  }
+  document.querySelector("#test1").addEventListener("keydown", keyDown);
+</script>

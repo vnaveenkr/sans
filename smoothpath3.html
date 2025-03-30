@@ -1,0 +1,21 @@
+<!doctype html>
+<script src="smoothpath.js"></script>
+<svg
+  id="svg1"
+  viewBox="0 0 200 200"
+  version="1.1"
+  xmlns="http://www.w3.org/2000/svg"
+></svg>
+<svg id="svg2"></svg>
+<script>
+  let points = [
+    [100, 0],
+    [75, 85],
+    [125, 85],
+    [100, 70],
+    [75, 85],
+  ];
+  let svg = document.querySelector("#svg1");
+  let d = smoothPath(points, 0.2);
+  svg.innerHTML = `<path d="${d}" fill="none" stroke="red" />`;
+</script>
